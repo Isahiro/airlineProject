@@ -1,14 +1,18 @@
 package com.cooksys.airline.models;
 
-// Generated May 13, 2016 12:21:08 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2016 5:18:38 PM by Hibernate Tools 4.3.1
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
+import java.util.HashSet;
+import java.util.Set;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import static javax.persistence.GenerationType.IDENTITY;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -19,35 +23,43 @@ import javax.persistence.Table;
 @Table(name = "ticket", catalog = "airline")
 public class Ticket implements java.io.Serializable {
 
-	private TicketId id;
+	private Integer id;
 	private User user;
+	private int flightId;
+	private Set<Trip> trips = new HashSet<Trip>(0);
 
 	public Ticket()
 	{
 	}
 
-	public Ticket(TicketId id, User user)
+	public Ticket(User user, int flightId)
 	{
-		this.id = id;
 		this.user = user;
+		this.flightId = flightId;
 	}
 
-	@EmbeddedId
-	@AttributeOverrides({
-			@AttributeOverride(name = "userId", column = @Column(name = "user_id", nullable = false)),
-			@AttributeOverride(name = "flightId", column = @Column(name = "flight_id", nullable = false)) })
-	public TicketId getId()
+	public Ticket(User user, int flightId, Set<Trip> trips)
+	{
+		this.user = user;
+		this.flightId = flightId;
+		this.trips = trips;
+	}
+
+	@Id
+	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id", unique = true, nullable = false)
+	public Integer getId()
 	{
 		return this.id;
 	}
 
-	public void setId(TicketId id)
+	public void setId(Integer id)
 	{
 		this.id = id;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = false, insertable = false, updatable = false)
+	@JoinColumn(name = "user_id", nullable = false)
 	public User getUser()
 	{
 		return this.user;
@@ -56,6 +68,29 @@ public class Ticket implements java.io.Serializable {
 	public void setUser(User user)
 	{
 		this.user = user;
+	}
+
+	@Column(name = "flight_id", nullable = false)
+	public int getFlightId()
+	{
+		return this.flightId;
+	}
+
+	public void setFlightId(int flightId)
+	{
+		this.flightId = flightId;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "trip_ticket", catalog = "airline", joinColumns = { @JoinColumn(name = "ticket_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "trip_id", nullable = false, updatable = false) })
+	public Set<Trip> getTrips()
+	{
+		return this.trips;
+	}
+
+	public void setTrips(Set<Trip> trips)
+	{
+		this.trips = trips;
 	}
 
 }

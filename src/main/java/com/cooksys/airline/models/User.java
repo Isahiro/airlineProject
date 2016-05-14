@@ -1,6 +1,6 @@
 package com.cooksys.airline.models;
 
-// Generated May 13, 2016 12:21:08 PM by Hibernate Tools 4.3.1
+// Generated May 13, 2016 5:18:38 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,6 +10,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -26,6 +29,7 @@ public class User implements java.io.Serializable {
 	private String lastName;
 	private String username;
 	private String password;
+	private Set<Trip> trips = new HashSet<Trip>(0);
 	private Set<Ticket> tickets = new HashSet<Ticket>(0);
 
 	public User()
@@ -42,12 +46,13 @@ public class User implements java.io.Serializable {
 	}
 
 	public User(String firstName, String lastName, String username,
-			String password, Set<Ticket> tickets)
+			String password, Set<Trip> trips, Set<Ticket> tickets)
 	{
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
 		this.password = password;
+		this.trips = trips;
 		this.tickets = tickets;
 	}
 
@@ -106,6 +111,18 @@ public class User implements java.io.Serializable {
 	public void setPassword(String password)
 	{
 		this.password = password;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "trip_user", catalog = "airline", joinColumns = { @JoinColumn(name = "user_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "trip_id", nullable = false, updatable = false) })
+	public Set<Trip> getTrips()
+	{
+		return this.trips;
+	}
+
+	public void setTrips(Set<Trip> trips)
+	{
+		this.trips = trips;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
