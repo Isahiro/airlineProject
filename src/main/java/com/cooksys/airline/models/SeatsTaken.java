@@ -3,9 +3,9 @@ package com.cooksys.airline.models;
 public class SeatsTaken 
 {
 	private Integer flightId;
-	private Integer numberOfTickets;
+	private Long numberOfTickets;
 	
-	public SeatsTaken(Integer flightId, Integer numberOfTickets)
+	public SeatsTaken(Integer flightId, Long numberOfTickets)
 	{
 		this.flightId = flightId;
 		this.numberOfTickets = numberOfTickets;
@@ -21,12 +21,12 @@ public class SeatsTaken
 		this.flightId = flightId;
 	}
 
-	public Integer getNumberOfTickets()
+	public Long getNumberOfTickets()
 	{
 		return numberOfTickets;
 	}
 
-	public void setNumberOfTickets(Integer numberOfTickets)
+	public void setNumberOfTickets(Long numberOfTickets)
 	{
 		this.numberOfTickets = numberOfTickets;
 	}

@@ -1,6 +1,6 @@
 package com.cooksys.airline.models;
 
-// Generated May 13, 2016 5:18:38 PM by Hibernate Tools 4.3.1
+// Generated May 14, 2016 4:09:48 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cooksys.airline.dao.TicketDao;
 import com.cooksys.airline.models.Route;
 import com.cooksys.airline.models.Trip;
-import com.cooksys.core.models.Location;
 
 @RestController
 @RequestMapping(value = "/tickets")
@@ -32,10 +31,10 @@ public class TicketController
 		return ticketDao.bookRoute(route, id);
 	}
 	
-	@RequestMapping(value = "/{origin}/{destination}", method = RequestMethod.GET)
-	public List<Route> findRoute(@PathVariable Location origin, @PathVariable Location destination)
+	@RequestMapping(value = "/{originId}/{destinationId}", method = RequestMethod.GET)
+	public List<Route> findRoute(@PathVariable Integer originId, @PathVariable Integer destinationId)
 	{
-		return ticketDao.planRoutes(origin, destination);
+		return ticketDao.planRoutes(originId, destinationId);
 	}
 	
 	@RequestMapping(value = "/trips", method = RequestMethod.POST)

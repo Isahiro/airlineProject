@@ -2,25 +2,21 @@ package com.cooksys.airline.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import com.cooksys.core.models.Flight;
 
 public class Route implements Comparable<Route>
 {
-	private List<Flight> flights;
+	private List<Flight> flights = new ArrayList<Flight>();
 
 	public Route()
 	{
-		this.flights = new ArrayList<Flight>();
+		
 	}
 	
-	public Route(Stack<Flight> flights)
+	public Route(List<Flight> flights)
 	{
-		while(!flights.isEmpty())
-		{
-			this.flights.add(flights.pop());
-		}
+		this.flights.addAll(flights);
 	}
 
 	public List<Flight> getFlights()
@@ -49,5 +45,19 @@ public class Route implements Comparable<Route>
 				otherLastFlight.getDeparture() + otherLastFlight.getEta();
 		
 		return thisArrivalTime - otherArrivalTime;
+	}
+	
+	public int earliestDeparture()
+	{
+		int earliest = 10000;
+		
+		if(!this.flights.isEmpty())
+		{
+			for(Flight f : flights)
+				if(f.getDeparture() < earliest)
+					earliest = f.getDeparture();
+		}
+		
+		return earliest;
 	}
 }
