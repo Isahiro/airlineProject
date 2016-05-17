@@ -9,10 +9,10 @@
 
   function AccessService () {
     this.currentUser = {
-      "id": 1,
-      "username": "Isahiro",
-      "trips": [],
-      "tickets": []
+      'id': 1,
+      'username': 'Isahiro',
+      'trips': [],
+      'tickets': []
     }
 
     this.isLoggedIn = () => {
