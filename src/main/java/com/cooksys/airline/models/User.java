@@ -1,6 +1,6 @@
 package com.cooksys.airline.models;
 
-// Generated May 14, 2016 4:09:48 PM by Hibernate Tools 4.3.1
+// Generated May 15, 2016 12:47:06 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,9 +30,6 @@ public class User implements java.io.Serializable {
 	private String username;
 	private String password;
 	private Set<Trip> trips = new HashSet<Trip>(0);
-	private Set<UserLocation> userLocations = new HashSet<UserLocation>(0);
-	private Set<UserDestination> userDestinations = new HashSet<UserDestination>(
-			0);
 	private Set<Ticket> tickets = new HashSet<Ticket>(0);
 
 	public User()
@@ -49,16 +46,13 @@ public class User implements java.io.Serializable {
 	}
 
 	public User(String firstName, String lastName, String username,
-			String password, Set<Trip> trips, Set<UserLocation> userLocations,
-			Set<UserDestination> userDestinations, Set<Ticket> tickets)
+			String password, Set<Trip> trips, Set<Ticket> tickets)
 	{
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
 		this.password = password;
 		this.trips = trips;
-		this.userLocations = userLocations;
-		this.userDestinations = userDestinations;
 		this.tickets = tickets;
 	}
 
@@ -129,28 +123,6 @@ public class User implements java.io.Serializable {
 	public void setTrips(Set<Trip> trips)
 	{
 		this.trips = trips;
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-	public Set<UserLocation> getUserLocations()
-	{
-		return this.userLocations;
-	}
-
-	public void setUserLocations(Set<UserLocation> userLocations)
-	{
-		this.userLocations = userLocations;
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-	public Set<UserDestination> getUserDestinations()
-	{
-		return this.userDestinations;
-	}
-
-	public void setUserDestinations(Set<UserDestination> userDestinations)
-	{
-		this.userDestinations = userDestinations;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")

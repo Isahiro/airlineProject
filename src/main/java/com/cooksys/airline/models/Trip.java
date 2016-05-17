@@ -1,6 +1,6 @@
 package com.cooksys.airline.models;
 
-// Generated May 14, 2016 4:09:48 PM by Hibernate Tools 4.3.1
+// Generated May 15, 2016 12:47:06 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -23,6 +24,10 @@ import javax.persistence.Table;
 public class Trip implements java.io.Serializable {
 
 	private Integer id;
+	private Location locationByStartLocation;
+	private Location locationByCurrentLocation;
+	private Location locationByDestinationLocation;
+	private boolean valid;
 	private Set<Ticket> tickets = new HashSet<Ticket>(0);
 	private Set<User> users = new HashSet<User>(0);
 
@@ -30,8 +35,23 @@ public class Trip implements java.io.Serializable {
 	{
 	}
 
-	public Trip(Set<Ticket> tickets, Set<User> users)
+	public Trip(Location locationByStartLocation,
+			Location locationByDestinationLocation, boolean valid)
 	{
+		this.locationByStartLocation = locationByStartLocation;
+		this.locationByDestinationLocation = locationByDestinationLocation;
+		this.valid = valid;
+	}
+
+	public Trip(Location locationByStartLocation,
+			Location locationByCurrentLocation,
+			Location locationByDestinationLocation, boolean valid,
+			Set<Ticket> tickets, Set<User> users)
+	{
+		this.locationByStartLocation = locationByStartLocation;
+		this.locationByCurrentLocation = locationByCurrentLocation;
+		this.locationByDestinationLocation = locationByDestinationLocation;
+		this.valid = valid;
 		this.tickets = tickets;
 		this.users = users;
 	}
@@ -47,6 +67,54 @@ public class Trip implements java.io.Serializable {
 	public void setId(Integer id)
 	{
 		this.id = id;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "start_location", nullable = false)
+	public Location getLocationByStartLocation()
+	{
+		return this.locationByStartLocation;
+	}
+
+	public void setLocationByStartLocation(Location locationByStartLocation)
+	{
+		this.locationByStartLocation = locationByStartLocation;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "current_location")
+	public Location getLocationByCurrentLocation()
+	{
+		return this.locationByCurrentLocation;
+	}
+
+	public void setLocationByCurrentLocation(Location locationByCurrentLocation)
+	{
+		this.locationByCurrentLocation = locationByCurrentLocation;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "destination_location", nullable = false)
+	public Location getLocationByDestinationLocation()
+	{
+		return this.locationByDestinationLocation;
+	}
+
+	public void setLocationByDestinationLocation(
+			Location locationByDestinationLocation)
+	{
+		this.locationByDestinationLocation = locationByDestinationLocation;
+	}
+
+	@Column(name = "valid", nullable = false)
+	public boolean isValid()
+	{
+		return this.valid;
+	}
+
+	public void setValid(boolean valid)
+	{
+		this.valid = valid;
 	}
 
 	@ManyToMany(fetch = FetchType.LAZY)

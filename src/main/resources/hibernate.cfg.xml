@@ -14,9 +14,7 @@
         <property name="hibernate.validator.apply_to_ddl">false</property>
         <mapping class="com.cooksys.airline.models.Location" />
         <mapping class="com.cooksys.airline.models.Trip" />
-        <mapping class="com.cooksys.airline.models.UserLocation" />
         <mapping class="com.cooksys.airline.models.User" />
         <mapping class="com.cooksys.airline.models.Ticket" />
-        <mapping class="com.cooksys.airline.models.UserDestination" />
     </session-factory>
 </hibernate-configuration>

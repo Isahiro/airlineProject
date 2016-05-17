@@ -31,31 +31,31 @@ public class TicketDaoImpl implements TicketDao
 	
 	@Autowired UserDao userDao;
 	
-	private FlightModel flightModel = updateFlightModel();
+	private FlightModel flightModel;
 	
-	private static List<Route> plannedRoutes = new ArrayList<Route>();
-	
-	public FlightModel updateFlightModel()
+	public void updateFlightModel()
 	{
 		// Get flights from bc-webservice
 		Gson gson = new Gson();
 		final String flightService = "http://localhost:8080/bc-final-webservice/getFlightModel";
 		RestTemplate restTemplate = new RestTemplate();
 		
-		return gson.fromJson(
+		this.flightModel = gson.fromJson(
 				restTemplate.getForObject(flightService, String.class), 
 				FlightModel.class);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
-	public String getLocations()
+	public List<com.cooksys.airline.models.Location> getLocations()
 	{
-		// Get serviced areas from bc-webservice
-		final String locationService = "http://localhost:8080/bc-final-webservice/getLocations";
-		RestTemplate restTemplate = new RestTemplate();
+		Session session = sf.getCurrentSession();
 		
-		return restTemplate
-				.getForObject(locationService, String.class);
+		String hql = "from Location";
+		
+		return session
+				.createQuery(hql)
+				.list();
 	}
 	
 	public List<Flight> getFlights()
@@ -72,14 +72,15 @@ public class TicketDaoImpl implements TicketDao
 	}
 
 	@Override
-	public Trip bookRoute(Route route, Integer id)
+	public Trip bookRoute(Route route, Integer userId, 
+			Integer originId, Integer destinationId)
 	{
 		Session session = sf.getCurrentSession();
 		
 		if(!routeValid(route))
 			return null;
 		
-		User user = userDao.get(id);
+		User user = userDao.get(userId);
 		List<Ticket> tickets = new ArrayList<Ticket>();
 		
 		for(Flight f : route.getFlights())
@@ -89,10 +90,14 @@ public class TicketDaoImpl implements TicketDao
 			tickets.add(ticket);
 		}
 		
-		Trip trip = new Trip();
+		com.cooksys.airline.models.Location origin = getLocation(originId);
+		com.cooksys.airline.models.Location destination = getLocation(destinationId);
+		
+		Trip trip = new Trip(origin, destination, true);
 		
 		trip.getTickets().addAll(tickets);		
 		trip.getUsers().add(user);
+		trip.setLocationByCurrentLocation(origin);
 		
 		session.save(trip);
 		return trip;
@@ -113,6 +118,7 @@ public class TicketDaoImpl implements TicketDao
 				if(flight.getFlightId().intValue() == routeFlight.getFlightId().intValue())
 				{
 					hasFlightId = true;
+					routeFlight = flight;
 					break;
 				}
 			}
@@ -126,8 +132,19 @@ public class TicketDaoImpl implements TicketDao
 		
 		if(!routePossible)
 			return false;
-		else
-			return true;
+		
+		if(route.getFlights().size() > 1)
+		{
+			for(int i = 0; i < route.getFlights().size() - 1; i++)
+			{
+				Flight f = route.getFlights().get(i);
+				
+				if(f.getDeparture() + f.getEta() > route.getFlights().get(i + 1).getDeparture())
+					return false;
+			}
+		}
+		
+		return true;
 	}
 
 	@Override
@@ -153,22 +170,21 @@ public class TicketDaoImpl implements TicketDao
 				+ origin.getCity() + ", " + origin.getState() + " to "
 				+ destination.getCity() + ", " + destination.getState());
 		
-		findRoutes(getAvailableFlights(), origin, destination, new Route());
+		List<Route> plannedRoutes = new ArrayList<Route>();
 		
-		List<Route> routes = getPlannedRoutes();
-		setPlannedRoutes(new ArrayList<Route>());
+		findRoutes(getAvailableFlights(), origin, destination, new Route(), plannedRoutes);
 		
-		Collections.sort(routes);
+		Collections.sort(plannedRoutes);
 		
-		return routes;
+		return plannedRoutes;
 	}
 	
 	// Finds routes to get to the destination and works back to origin
 	public void findRoutes(List<Flight> flights, Location origin, 
-			Location destination, Route routeBuilder)
+			Location destination, Route routeBuilder, List<Route> plannedRoutes)
 	{
 		// If a flight was found to reach a destination 
-		// set the new destination to the flight's origin
+		// set the new destination to that flight's origin
 		if(!routeBuilder.getFlights().isEmpty())
 		{
 			destination = routeBuilder
@@ -226,7 +242,7 @@ public class TicketDaoImpl implements TicketDao
 								f.getDestination().getCity() + ", " + f.getDestination().getState());
 					}
 					// Add the route to the planned routes
-					getPlannedRoutes().add(route);
+					plannedRoutes.add(route);
 				}
 				else if(i == 0)
 				{
@@ -236,7 +252,7 @@ public class TicketDaoImpl implements TicketDao
 				else
 				{
 					List<Flight> newFlights = removeUnavailableFlights(flights, newrouteBuilder);
-					findRoutes(newFlights, origin, destination, newrouteBuilder);
+					findRoutes(newFlights, origin, destination, newrouteBuilder, plannedRoutes);
 				}
 			}
 		}
@@ -271,13 +287,155 @@ public class TicketDaoImpl implements TicketDao
 	}
 
 	@Override
+	public List<Trip> getTripsByFlightId(Integer id)
+	{
+		System.out.println("Searching for trips related to a flight");
+		
+		Session session = sf.getCurrentSession();
+		
+		String hql = "from Trip";
+		
+		@SuppressWarnings("unchecked")
+		List<Trip> trips = session
+				.createQuery(hql)
+				.list();
+		
+		List<Trip> tripsWithFlight = new ArrayList<Trip>();
+		
+		if(!trips.isEmpty())
+		{
+			System.out.println("Checking trips for flight " + id);
+			
+			for(Trip trip : trips)
+			{
+				System.out.println("Checking " + trip.getTickets().size() + " for flight");
+				for(Ticket ticket : trip.getTickets())
+				{
+					if(ticket.getFlightId() == id)
+					{
+						tripsWithFlight.add(trip);
+						System.out.println("Trip contained flight " + id);
+						break;
+					}
+					
+					System.out.println("Flight not found in this trip");
+				}
+			}
+			
+			System.out.println("Found " + tripsWithFlight.size() + "trips with flight " + id);
+		}
+		else
+		{
+			System.out.println("No trips to check");
+			return null;
+		}
+		
+		return tripsWithFlight;
+	}
+	
+	@Override
 	public boolean tripValid(Trip trip)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		if(trip.getTickets().isEmpty())
+			return true;
+		
+		List<Flight> tripFlights = new ArrayList<Flight>();
+		
+		for(Ticket t : trip.getTickets())
+		{
+			Flight flight = getFlightFromModel(t.getFlightId());
+			
+			if(flight != null)
+				tripFlights.add(flight);
+			else
+				trip.setValid(false);
+		}
+		
+		if(trip.isValid())
+		{
+			Collections.sort(tripFlights);
+			Route route = new Route(tripFlights);
+			
+			trip.setValid(routeValid(route));
+		}
+		
+		return trip.isValid();
 	}
 
-	public List<Flight> removeDepartedFlights(List<Flight> flights)
+	@Override
+	public void holdTrip(Trip trip, Location location)
+	{
+		Session session = sf.getCurrentSession();
+		
+		trip.setLocationByCurrentLocation(getLocationByName(location));
+		
+		for(Ticket t : trip.getTickets())
+		{
+			session.delete(t);
+		}
+		
+		trip.getTickets().clear();
+		
+		session.update(trip);
+	}
+	
+	public List<Trip> getTrips(Integer id)
+	{
+		Session session = sf.getCurrentSession();
+		
+		String hql = "select u.trips from User u where u.id = :id";
+		
+		@SuppressWarnings("unchecked")
+		List<Trip> userTrips = session
+				.createQuery(hql)
+				.setParameter("id", id)
+				.list();
+		
+		List<Trip> activeTrips = new ArrayList<Trip>();
+		
+		for(Trip t : userTrips)
+		{
+			if(!t.getTickets().isEmpty())
+				activeTrips.add(t);
+		}
+		
+		return activeTrips;
+	}
+
+	public List<Trip> cancelTrip(Integer userId, Integer tripId)
+	{
+		Session session = sf.getCurrentSession();
+		
+		String hql = "from Trip t where t.id = :id";
+		
+		Trip trip = (Trip) session
+				.createQuery(hql)
+				.setParameter("id", tripId)
+				.uniqueResult();
+		
+		for(Ticket t : trip.getTickets())
+		{
+			session.delete(t);
+		}
+		
+		trip.getUsers().clear();
+		session.delete(trip);
+		
+		return getTrips(userId);
+	}
+	
+	private Flight getFlightFromModel(int flightId)
+	{
+		for(Flight f : getFlights())
+		{
+			if(f.getFlightId() == flightId)
+				return f;
+		}
+		
+		return null;
+	}
+
+	private List<Flight> removeDepartedFlights(List<Flight> flights)
 	{
 		List<Flight> newFlights = new ArrayList<Flight>();
 		
@@ -292,7 +450,7 @@ public class TicketDaoImpl implements TicketDao
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Flight> removeFullFlights(List<Flight> flights)
+	private List<Flight> removeFullFlights(List<Flight> flights)
 	{
 		Session session = sf.getCurrentSession();
 		
@@ -330,20 +488,54 @@ public class TicketDaoImpl implements TicketDao
 		return newFlights;
 	}
 	
-	public List<Flight> getAvailableFlights()
+	private List<Flight> getAvailableFlights()
 	{
 		return removeFullFlights(removeDepartedFlights(getFlights()));
 	}
-
-	private static List<Route> getPlannedRoutes()
+	
+	public com.cooksys.airline.models.Location getLocation(Integer id)
 	{
-		return plannedRoutes;
-	}
-
-	private static void setPlannedRoutes(List<Route> plannedRoutes)
-	{
-		TicketDaoImpl.plannedRoutes = plannedRoutes;
+		Session session = sf.getCurrentSession();
+		
+		String hql = "from Location l where l.id = :id";
+		
+		return (com.cooksys.airline.models.Location) session
+				.createQuery(hql)
+				.setParameter("id", id)
+				.uniqueResult();
 	}
 	
-	
+	public com.cooksys.airline.models.Location getLocationByName(Location location)
+	{
+		Session session = sf.getCurrentSession();
+		
+		String hql = "from Location l "
+				+ "where l.city = :city "
+				+ "and where l.state = :state";
+		
+		return (com.cooksys.airline.models.Location) session
+				.createQuery(hql)
+				.setParameter("city", location.getCity())
+				.setParameter("state", location.getState())
+				.uniqueResult();
+	}
+
+	@Override
+	public void removeFlightFromTrips(List<Trip> trips, Integer flightId)
+	{
+		Session session = sf.getCurrentSession();
+		
+		for(Trip trip : trips)
+		{
+			for(Ticket ticket : trip.getTickets())
+			{
+				if(ticket.getFlightId() == flightId)
+				{
+					trip.getTickets().remove(ticket);
+					session.update(trip);
+					break;
+				}
+			}
+		}
+	}
 }

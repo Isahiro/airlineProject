@@ -1,6 +1,6 @@
 package com.cooksys.airline.models;
 
-// Generated May 14, 2016 4:09:48 PM by Hibernate Tools 4.3.1
+// Generated May 15, 2016 12:47:06 PM by Hibernate Tools 4.3.1
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,9 +23,9 @@ public class Location implements java.io.Serializable {
 	private Integer id;
 	private String city;
 	private String state;
-	private Set<UserDestination> userDestinations = new HashSet<UserDestination>(
-			0);
-	private Set<UserLocation> userLocations = new HashSet<UserLocation>(0);
+	private Set<Trip> tripsForStartLocation = new HashSet<Trip>(0);
+	private Set<Trip> tripsForCurrentLocation = new HashSet<Trip>(0);
+	private Set<Trip> tripsForDestinationLocation = new HashSet<Trip>(0);
 
 	public Location()
 	{
@@ -37,14 +37,15 @@ public class Location implements java.io.Serializable {
 		this.state = state;
 	}
 
-	public Location(String city, String state,
-			Set<UserDestination> userDestinations,
-			Set<UserLocation> userLocations)
+	public Location(String city, String state, Set<Trip> tripsForStartLocation,
+			Set<Trip> tripsForCurrentLocation,
+			Set<Trip> tripsForDestinationLocation)
 	{
 		this.city = city;
 		this.state = state;
-		this.userDestinations = userDestinations;
-		this.userLocations = userLocations;
+		this.tripsForStartLocation = tripsForStartLocation;
+		this.tripsForCurrentLocation = tripsForCurrentLocation;
+		this.tripsForDestinationLocation = tripsForDestinationLocation;
 	}
 
 	@Id
@@ -82,26 +83,38 @@ public class Location implements java.io.Serializable {
 		this.state = state;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
-	public Set<UserDestination> getUserDestinations()
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "locationByStartLocation")
+	public Set<Trip> getTripsForStartLocation()
 	{
-		return this.userDestinations;
+		return this.tripsForStartLocation;
 	}
 
-	public void setUserDestinations(Set<UserDestination> userDestinations)
+	public void setTripsForStartLocation(Set<Trip> tripsForStartLocation)
 	{
-		this.userDestinations = userDestinations;
+		this.tripsForStartLocation = tripsForStartLocation;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "location")
-	public Set<UserLocation> getUserLocations()
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "locationByCurrentLocation")
+	public Set<Trip> getTripsForCurrentLocation()
 	{
-		return this.userLocations;
+		return this.tripsForCurrentLocation;
 	}
 
-	public void setUserLocations(Set<UserLocation> userLocations)
+	public void setTripsForCurrentLocation(Set<Trip> tripsForCurrentLocation)
 	{
-		this.userLocations = userLocations;
+		this.tripsForCurrentLocation = tripsForCurrentLocation;
+	}
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "locationByDestinationLocation")
+	public Set<Trip> getTripsForDestinationLocation()
+	{
+		return this.tripsForDestinationLocation;
+	}
+
+	public void setTripsForDestinationLocation(
+			Set<Trip> tripsForDestinationLocation)
+	{
+		this.tripsForDestinationLocation = tripsForDestinationLocation;
 	}
 
 }
