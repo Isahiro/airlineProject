@@ -40,8 +40,8 @@ public class UserController
 	}
 	
 	// airline/api/users/login
-	@RequestMapping(value ="/login", method = RequestMethod.POST)
-	public User login(@RequestBody String username)
+	@RequestMapping(value ="/login/{username}", method = RequestMethod.GET)
+	public User login(@PathVariable String username)
 	{
 		return userDao.get(username);
 	}

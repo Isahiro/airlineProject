@@ -35,6 +35,17 @@ public class User implements java.io.Serializable {
 	public User()
 	{
 	}
+	
+	public User(String username)
+	{
+		this.username = username;
+	}
+	
+	public User(Integer id, String username)
+	{
+		this.id = id;
+		this.username = username;
+	}
 
 	public User(String firstName, String lastName, String username,
 			String password)

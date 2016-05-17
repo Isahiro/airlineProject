@@ -45,13 +45,17 @@ public class UserDaoImpl implements UserDao
 	{
 		Session session = sf.getCurrentSession();
 		
-		String hql = "select u.username, u.id "
+		String hql = "select new com.cooksys.airline.models.User(u.username) "
 				+ "from User u where u.id = :id";
 		
-		return (User) session
+		User user = (User) session
 				.createQuery(hql)
 				.setInteger("id", id)
 				.uniqueResult();
+		
+		user.setId(id);
+		
+		return user;
 	}
 
 	@Override
@@ -59,12 +63,13 @@ public class UserDaoImpl implements UserDao
 	{
 		Session session = sf.getCurrentSession();
 		
-		String hql = "select u.username, u.id, u.password "
+		String hql = "select new com.cooksys.airline.models.User("
+				+ "u.id, u.username) "
 				+ "from User u where u.username = :username";
 		
 		return (User) session
 				.createQuery(hql)
-				.setString("username", username)
+				.setParameter("username", username)
 				.uniqueResult();
 	}
 

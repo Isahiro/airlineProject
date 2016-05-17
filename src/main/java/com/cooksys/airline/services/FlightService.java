@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import com.cooksys.airline.controllers.WebSocketController;
 import com.cooksys.airline.dao.TicketDao;
@@ -14,7 +14,7 @@ import com.cooksys.airline.models.Trip;
 import com.cooksys.core.models.Flight;
 import com.google.gson.Gson;
 
-@Service
+@Repository
 public class FlightService 
 {
 	private static final String ARRIVED = "Flight Arrived";

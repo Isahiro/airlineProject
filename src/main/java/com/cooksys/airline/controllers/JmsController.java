@@ -28,7 +28,7 @@ public class JmsController
 	private static final String JMS_URL = "tcp://localhost:61616";
 	private static final String TOPIC_NAME = "FlightUpdate";
 	
-	@Autowired FlightService flightController;
+	@Autowired FlightService flightService;
 	
 	@RequestMapping(method = RequestMethod.GET)
 	public String startJmsController()
@@ -66,7 +66,7 @@ public class JmsController
 							String flightStatus = message.getStringProperty(FLIGHT_STATUS_PROPERTY);
 							
 							System.out.println("Received notification: " + flightStatus);
-							flightController.handleFlightMessage(text, flightStatus);
+							flightService.handleFlightMessage(text, flightStatus);
 						}
 						else
 						{
