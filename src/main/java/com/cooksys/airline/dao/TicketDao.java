@@ -18,5 +18,6 @@ public interface TicketDao
 	List<Trip> cancelTrip(Integer userId, Integer tripId);
 	void holdTrip(Trip trip, Location location);
 	void removeFlightFromTrips(List<Trip> trips, Integer flightId);
+	List<Trip> updateTrip(Integer userId, Integer tripId, Route route);
 
 }

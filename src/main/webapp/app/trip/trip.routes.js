@@ -2,7 +2,7 @@
 
 (() => {
   angular
-    .module('fastbook.trip')
+    .module('airline.trip')
     .constant('tripRoutes', {
       reviewTrips: {
         url: '/trips/{username}',
@@ -10,8 +10,8 @@
         controller: 'TripReviewController',
         controllerAs: 'tripReview',
         resolve: {
-          trips: ['tripService', '$stateParams', function (tripService, $stateParams) {
-            tripService.getTripsById($stateParams.id)
+          trips: ['tripService', 'accessService', function (tripService, accessService) {
+            tripService.getTripsById(accessService.currentUser.id)
           }]
         },
         data: {
@@ -20,9 +20,9 @@
       },
 
       planTrip: {
-        url: '/trips/planning',
-        templateUrl: 'app/trip/trip-planning.template.html',
-        controller: 'TripPlanningController',
+        url: '/trips/planner',
+        templateUrl: 'app/trip/trip-planner.template.html',
+        controller: 'TripPlannerController',
         controllerAs: 'tripPlanner',
         resolve: {
           locations: ['tripService', function (tripService) {

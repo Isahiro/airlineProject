@@ -77,18 +77,12 @@ public class TicketDaoImpl implements TicketDao
 	{
 		Session session = sf.getCurrentSession();
 		
-		if(!routeValid(route))
+		List<Ticket> tickets = createTickets(route, userId);
+		
+		if(tickets == null)
 			return null;
 		
 		User user = userDao.get(userId);
-		List<Ticket> tickets = new ArrayList<Ticket>();
-		
-		for(Flight f : route.getFlights())
-		{
-			Ticket ticket = new Ticket(user, f.getFlightId());
-			session.save(ticket);
-			tickets.add(ticket);
-		}
 		
 		com.cooksys.airline.models.Location origin = getLocation(originId);
 		com.cooksys.airline.models.Location destination = getLocation(destinationId);
@@ -537,5 +531,51 @@ public class TicketDaoImpl implements TicketDao
 				}
 			}
 		}
+	}
+	
+	public Trip getTripById(Integer tripId)
+	{
+		Session session = sf.getCurrentSession();
+		
+		String hql = "from Trip t where t.id = :id";
+		
+		return (Trip) session
+				.createQuery(hql)
+				.setParameter("id", tripId)
+				.uniqueResult();
+	}
+
+	@Override
+	public List<Trip> updateTrip(Integer userId, Integer tripId, Route route)
+	{
+		Session session = sf.getCurrentSession();
+		
+		
+		
+		User user = userDao.get(userId);
+		
+		
+		
+		return null;
+	}
+	
+	public List<Ticket> createTickets(Route route, Integer userId)
+	{
+		Session session = sf.getCurrentSession();
+		
+		if(!routeValid(route))
+			return null;
+		
+		User user = userDao.get(userId);
+		List<Ticket> tickets = new ArrayList<Ticket>();
+		
+		for(Flight f : route.getFlights())
+		{
+			Ticket ticket = new Ticket(user, f.getFlightId());
+			session.save(ticket);
+			tickets.add(ticket);
+		}
+		
+		return tickets;
 	}
 }

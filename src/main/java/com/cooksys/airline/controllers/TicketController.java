@@ -45,6 +45,13 @@ public class TicketController
 		return ticketDao.getTrips(id);
 	}
 	
+	@RequestMapping(value = "/trips/{userId}/{tripId}", method = RequestMethod.PUT)
+	public List<Trip> updateTrip(
+			@PathVariable Integer userId, @PathVariable Integer tripId, @RequestBody Route route)
+	{
+		return ticketDao.updateTrip(userId, tripId, route);
+	}
+	
 	@RequestMapping(value = "/trips/{userId}/{tripId}", method = RequestMethod.DELETE)
 	public List<Trip> cancelTrip(@PathVariable Integer userId, @PathVariable Integer tripId)
 	{

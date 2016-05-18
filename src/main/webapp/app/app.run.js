@@ -2,7 +2,7 @@
 
 (() => {
   angular
-    .module('fastbook')
+    .module('airline')
     .run(run)
 
   run.$inject = ['$rootScope', 'accessService', '$state', '$stateParams']
@@ -16,7 +16,8 @@
         let loggedIn = accessService.isLoggedIn()
 
         if (toState.data === false && !loggedIn) {
-          event.preventDefault();$state.go('login')
+          event.preventDefault()
+          $state.go('welcome')
         }
       })
   }

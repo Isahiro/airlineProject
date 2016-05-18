@@ -39,7 +39,7 @@ public class UserController
 		return userDao.get(id);
 	}
 	
-	// airline/api/users/login
+	// airline/api/users/login/{username}
 	@RequestMapping(value ="/login/{username}", method = RequestMethod.GET)
 	public User login(@PathVariable String username)
 	{

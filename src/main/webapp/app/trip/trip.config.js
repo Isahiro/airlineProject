@@ -8,10 +8,10 @@
   config.$inject = ['tripRoutes', '$stateProvider']
 
   function config (tripRoutes, $stateProvider) {
-    Object.keys(tripRoutes) // JS built in function
+    Object.keys(tripRoutes)
       .forEach(key => {
         $stateProvider
-          .state(key, tripRoutes[key])  // accesses each state object given the key and the object
+          .state(key, tripRoutes[key])
       })
   }
 })()

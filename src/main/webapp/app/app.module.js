@@ -2,11 +2,15 @@
 
 (() => {
   angular
-    .module('fastbook',
+    .module('airline',
     [
       'ngMaterial',
       'ngMessages',
+      'ngAria',
+      'ngAnimate',
       'ui.router',
-      'dtrw.bcrypt'
+      'dtrw.bcrypt',
+      'airline.trip',
+      'airline.access'
     ])
 })()

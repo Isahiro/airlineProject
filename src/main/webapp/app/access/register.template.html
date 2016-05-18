@@ -1,0 +1,53 @@
+<div layout="column" layout padding style="width: 100vw; height: 100vh;">
+
+  <div>
+    <h1>Register with Dalton Airlines</h1>
+  </div>
+
+  <md-divider></md-divider>
+
+  <div style="text-align: center; margin-top: 10px;">
+    <form class="form-register" name="register" novalidate>
+
+      <div class="input-field">
+        <input id="first-name" type="text" class="validate" required ng-model="registerCtrl.user.firstName">
+        <span>
+          <label for="first-name">First Name</label>
+        </span>
+      </div>
+
+      <div class="input-field">
+        <input id="last-name" type="text" class="validate" required ng-model="registerCtrl.user.lastName">
+        <span>
+          <label for="last-name">Last Name</label>
+        </span>
+      </div>
+
+      <div class="input-field">
+        <input id="username" type="username" name="username" ng-model="registerCtrl.user.username" class="validate" required>
+        <span>
+          <label for="username">Username</label>
+        </span>
+      </div>
+
+      <div class="input-field">
+        <input id="password" type="password" name="password" ng-model="registerCtrl.user.password" ng-minlength='6' class="validate" required>
+        <span>
+          <label for="password">Password</label>
+        </span>
+      </div>
+
+      <p class="alert alert-danger" ng-show="form-register.password.$error.minlength || form.password.$invalid">Your password must be at least 6 characters.</p>
+
+      <div class="space-top textCenter">
+        <md-button class="md-raised md-primary" ng-disabled="form-register.$invalid" ng-click=registerCtrl.register()>
+          Register
+        </md-button>
+        <md-button class="md-raised md-primary" ng-click="registerCtrl.user = null;">
+          Cancel
+        </md-button>
+        <div>{{registerCtrl.errorMessage}}</div>
+      </div>
+    </form>
+  </div>
+</div>
