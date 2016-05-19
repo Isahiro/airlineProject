@@ -46,7 +46,8 @@
 
     this.cancelTrip = (trip) => {
       return $http
-        .delete('./api/tickets/' + accessService.currentUser.id +
+        .delete('./api/tickets/trips/' +
+            accessService.currentUser.id +
             '/' + trip.id)
         .then(response => response.data)
     }

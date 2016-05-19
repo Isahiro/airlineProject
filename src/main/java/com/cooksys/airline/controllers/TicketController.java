@@ -58,7 +58,7 @@ public class TicketController
 	{
 		return ticketDao.cancelTrip(userId, tripId);
 	}
-	@RequestMapping(value = "/flights/{flightId", method = RequestMethod.GET)
+	@RequestMapping(value = "/flights/{flightId}", method = RequestMethod.GET)
 	public Flight getFlight(@PathVariable Integer flightId)
 	{
 		return ticketDao.getFlightFromModel(flightId);

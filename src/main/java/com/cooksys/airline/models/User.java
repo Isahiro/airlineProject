@@ -35,6 +35,7 @@ public class User implements java.io.Serializable {
 	private String username;
 	private String password;
 
+	@JsonIgnore
 	private Set<Trip> trips = new HashSet<Trip>(0);
 	
 	@JsonIgnore
@@ -133,7 +134,7 @@ public class User implements java.io.Serializable {
 		this.password = password;
 	}
 
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "trip_user", catalog = "airline", joinColumns = { @JoinColumn(name = "user_id", nullable = false, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "trip_id", nullable = false, updatable = false) })
 	public Set<Trip> getTrips()
 	{

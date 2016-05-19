@@ -9,11 +9,6 @@
         templateUrl: 'app/trip/trip-review.template.html',
         controller: 'TripReviewController',
         controllerAs: 'tripReview',
-        resolve: {
-          userTrips: ['tripService', 'accessService', function (tripService, accessService) {
-            tripService.getTripsById(accessService.currentUser.id)
-          }]
-        },
         data: {
           loggedIn: true
         }

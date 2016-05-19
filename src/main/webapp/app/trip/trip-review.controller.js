@@ -6,25 +6,28 @@
     .controller('TripReviewController', TripReviewController)
 
   TripReviewController.$inject = [
-    'userTrips', 'tripService', '$state', '$scope', '$http'
+    'accessService', 'tripService', '$state', '$scope', '$http', '$log'
   ]
 
   function TripReviewController (
-    userTrips, tripService, $state, $scope, $http
+    accessService, tripService, $state, $scope, $http, $log
   ) {
-    this.trips = userTrips
-    this.flights
-
     this.trips
-      .forEach(this.getTickets)
-      .forEach(this.getFlightFromModel)
+    this.flights = []
+
+    tripService
+      .getTripsById(accessService.currentUser.id)
+      .then(trips => this.trips = trips)
+      .then(() => {
+        this.trips
+          .forEach(this.getTickets)
+      })
 
     this.cancelTrip = (trip) => {
       tripService
         .cancelTrip(trip)
         .then(trips => {
           this.trips = trips
-          $scope.apply()
         })
     }
 
@@ -36,22 +39,30 @@
     }
 
     this.getTickets = (trip) => {
-      return trip.tickets
+      trip.tickets.forEach(this.getFlightFromModel)
     }
 
     this.getFlightFromModel = (ticket) => {
+      $log.debug('calling getFlightFromModel ' + ticket.flightId)
       $http
-        .get('./api/trips/flights/' + ticket.flightId)
+        .get('./api/tickets/flights/' + ticket.flightId)
         .then(response => response.data)
-        .then(flight => this.flights.push(flight))
+        .then(flight => {
+          $log.debug(flight)
+          this.flights.push(flight)
+        })
+        .then(() => {
+          $log.debug(this.flights)
+        })
     }
 
     this.getFlight = (ticket) => {
-      this.flights.forEach(function (flight) {
-        if (flight.flightId === ticket.flightId) {
-          return flight
+      for (let i = 0; i < this.flights.length; i++) {
+        $log.debug(this.flights[i])
+        if (this.flights[i].flightId === ticket.flightId) {
+          return this.flights[i]
         }
-      })
+      }
     }
   }
 })()
