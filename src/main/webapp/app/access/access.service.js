@@ -10,9 +10,7 @@
   function AccessService (bcrypt, $http, $state) {
     this.currentUser = {
       'id': 1,
-      'username': 'Isahiro',
-      'trips': [],
-      'tickets': []
+      'username': 'Isahiro'
     }
 
     this.register = (user) => {
@@ -34,13 +32,33 @@
         })
     }
 
+    this.login = (credentials) => {
+      return $http
+        .get('./api/users/login/' + credentials.username)
+        .then(response => response.data)
+        .then(user => {
+          if (user.id == null) {
+            return null
+          } else {
+            if (bcrypt.compareSync(credentials.password, user.password)) {
+              this.currentUser = user
+              delete this.currentUser.password
+              credentials = undefined
+              $state.go('reviewTrips')
+            } else {
+              return null
+            }
+          }
+        })
+    }
+
     this.logout = () => {
       this.currentUser = undefined
       $state.go('welcome')
     }
 
     this.isLoggedIn = () => {
-      this.currentUser !== undefined
+      return this.currentUser !== undefined
     }
   }
 })()

@@ -1,0 +1,88 @@
+<header>
+  <h1>
+    Plan a trip
+  </h1>
+
+  <div>
+    <md-menu>
+      <md-button
+          aria-label="Select Origin"
+          class="md-button-raised"
+          ng-click="$mdOpenMenu($event)">
+        Selecet origin
+      </md-button>
+
+      <md-menu-content width="6">
+        <md-menu-item ng-repeat="location in tripPlanner.locations">
+          <md-button
+              ng-click="tripPlanner.setOrigin(location)">
+            <span md-menu-align-target="">{{location.city}}, </span>
+            {{location.state}}
+          </md-button>
+        </md-menu-item>
+      </md-menu-content>
+    </md-menu>
+
+    <md-menu>
+      <md-button
+          aria-label="Select Origin"
+          class="md-button-raised"
+          ng-click="$mdOpenMenu($event)">
+        Selecet destination
+      </md-button>
+
+      <md-menu-content width="6">
+        <md-menu-item ng-repeat="location in tripPlanner.locations">
+          <md-button
+              ng-click="tripPlanner.setDestination(location)">
+            <span md-menu-align-target="">{{location.city}}, </span>
+            {{location.state}}
+          </md-button>
+        </md-menu-item>
+      </md-menu-content>
+    </md-menu>
+
+    <md-button
+        class="md-raised"
+        aria-label="Find Routes"
+        ng-click="tripPlanner.findRoutes()">
+      Find Routes
+    </md-button>
+  </div>
+</header>
+
+<div>
+  {{tripPlanner.errorMessage}}
+</div>
+
+<md-list>
+  <md-list-item ng-repeat="route in tripPlanner.routes">
+    <div>
+      <md-divider
+          style="padding-top: 5px; padding-bottom: 5px;">
+      </md-divider>
+
+      <div ng-repeat="flight in route.flights">
+        <header>
+          <h3>
+            Flight #{{flight.flightId}}
+            from {{flight.origin.city}},
+            {{flight.origin.state}} to
+            {{flight.destination.city}},
+            {{flight.destination.state}}
+          </h3>
+        </header>
+
+        Departs in {{flight.departure}} days and
+        will last {{flight.eta}} days
+      </div>
+
+      <md-button
+          class="md-raised"
+          aria-label="Book this route"
+          ng-click="tripPlanner.bookRoute(route)">
+        Book this route
+      </md-button>
+    </div>
+  </md-list-item>
+</md-list>

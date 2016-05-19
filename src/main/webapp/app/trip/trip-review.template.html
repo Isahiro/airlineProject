@@ -1,0 +1,73 @@
+<header class="centered">
+  <h2>Your trips</h2>
+</header>
+
+<md-list>
+  <md-divider
+      style="padding-top: 5px; padding-bottom: 5px;">
+  </md-divider>
+
+  <md-list-item ng-repeat="trip in tripReview.trips">
+    <div>
+      <h3>
+        From {{trip.locationByStartLocation.city}},
+        {{trip.locationByStartLocation.state}} to
+        {{trip.locationByDestinationLocation.city}},
+        {{trip.locationByDestinationLocation.state}}
+
+        <span flex></span>
+
+        <md-button
+            class="md-raised"
+            aria-label="Cancel Trip"
+            ng-click="tripReview.cancelTrip(trip)">
+          Cancel Trip
+        </md-button>
+      </h3>
+
+      <md-list ng-if="trip.valid">
+        <md-list-item ng-repeat="ticket in trip.tickets">
+          <span>
+            <div>
+              Origin: {{tripReview.getFlight(ticket).origin.city}},
+              {{tripReview.getFlight(ticket).origin.state}}
+            </div>
+
+            <div>
+              Destination: {{tripReview.getFlight(ticket).destination.city}},
+              {{tripReview.getFlight(ticket).destination.state}}
+            </div>
+          </span>
+
+          <span flex></span>
+
+          <span>
+            <div>
+              Departs in {{tripReview.getFlight(ticket).departure}} days
+            </div>
+
+            <div>
+              Flight will last {{tripReview.getFlight(ticket).eta}} days
+            </div>
+          </span>
+        </md-list-item>
+      </md-list>
+
+      <div ng-if="!trip.valid">
+        <h2 class="md-warning">
+          Flights were delayed that cause a problem for your trip!
+        </h2>
+
+        <md-button
+            class="md-raised"
+            aria-label="Reroute your trip"
+            ng-click="tripReview.updateTrip(
+                trip.locationByCurrentLocation,
+                trip.locationByDestinationLocation,
+                trip)">
+          Reroute
+        </md-button>
+      </div>
+    </div>
+  </md-list-itam>
+</md-list>

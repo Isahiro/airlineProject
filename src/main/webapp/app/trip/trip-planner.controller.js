@@ -6,16 +6,28 @@
     .controller('TripPlannerController', TripPlannerController)
 
   TripPlannerController.$inject = [
-    'locations', 'tripService', 'accessService', '$scope', '$state']
+    'tripService', 'accessService', '$scope', '$state', '$log']
 
   function TripPlannerController (
-    locations, tripService, accessService, $scope, $state
+    tripService, accessService, $scope, $state, $log
   ) {
-    this.locations = locations
+    this.locations
     this.origin = tripService.getOrigin
     this.destination = tripService.getDestination
     this.errorMessage = undefined
     this.routes
+
+    tripService
+      .getLocations()
+      .then(locations => this.locations = locations)
+
+    this.setOrigin = (location) => {
+      this.origin = location
+    }
+
+    this.setDestination = (location) => {
+      this.destination = location
+    }
 
     this.findRoutes = () => {
       tripService
@@ -34,6 +46,7 @@
             this.origin = undefined
             this.destination = undefined
             this.routes = undefined
+            tripService.setTrip(undefined)
             $state.go('reviewTrips')
           } else {
             this.errorMessage = 'There was a problem booking this route. Please try another route'

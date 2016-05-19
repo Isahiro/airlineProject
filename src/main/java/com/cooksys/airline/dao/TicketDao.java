@@ -2,9 +2,10 @@ package com.cooksys.airline.dao;
 
 import java.util.List;
 
-import com.cooksys.core.models.Location;
 import com.cooksys.airline.models.Route;
 import com.cooksys.airline.models.Trip;
+import com.cooksys.core.models.Flight;
+import com.cooksys.core.models.Location;
 
 public interface TicketDao 
 {
@@ -19,5 +20,6 @@ public interface TicketDao
 	void holdTrip(Trip trip, Location location);
 	void removeFlightFromTrips(List<Trip> trips, Integer flightId);
 	List<Trip> updateTrip(Integer userId, Integer tripId, Route route);
+	Flight getFlightFromModel(Integer flightId);
 
 }

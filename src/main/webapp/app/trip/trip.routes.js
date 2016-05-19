@@ -10,7 +10,7 @@
         controller: 'TripReviewController',
         controllerAs: 'tripReview',
         resolve: {
-          trips: ['tripService', 'accessService', function (tripService, accessService) {
+          userTrips: ['tripService', 'accessService', function (tripService, accessService) {
             tripService.getTripsById(accessService.currentUser.id)
           }]
         },
@@ -24,11 +24,6 @@
         templateUrl: 'app/trip/trip-planner.template.html',
         controller: 'TripPlannerController',
         controllerAs: 'tripPlanner',
-        resolve: {
-          locations: ['tripService', function (tripService) {
-            tripService.getLocations()
-          }]
-        },
         data: {
           loggedIn: true
         }

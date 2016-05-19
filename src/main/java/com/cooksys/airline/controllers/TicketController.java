@@ -13,6 +13,7 @@ import com.cooksys.airline.dao.TicketDao;
 import com.cooksys.airline.models.Location;
 import com.cooksys.airline.models.Route;
 import com.cooksys.airline.models.Trip;
+import com.cooksys.core.models.Flight;
 
 @RestController
 @RequestMapping(value = "/tickets")
@@ -56,5 +57,10 @@ public class TicketController
 	public List<Trip> cancelTrip(@PathVariable Integer userId, @PathVariable Integer tripId)
 	{
 		return ticketDao.cancelTrip(userId, tripId);
+	}
+	@RequestMapping(value = "/flights/{flightId", method = RequestMethod.GET)
+	public Flight getFlight(@PathVariable Integer flightId)
+	{
+		return ticketDao.getFlightFromModel(flightId);
 	}
 }

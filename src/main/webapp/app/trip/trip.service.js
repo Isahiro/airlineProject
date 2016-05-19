@@ -10,6 +10,7 @@
   function TripService (accessService, $http) {
     this.storedOrigin
     this.storedDestination
+    this.storedTrip
 
     this.getLocations = () => {
       return $http
@@ -25,15 +26,22 @@
 
     this.findRoutes = (origin, destination) => {
       return $http
-        .get('./api/tickets' + origin.id + '/' + destination.id)
+        .get('./api/tickets/' + origin.id + '/' + destination.id)
         .then(response => response.data)
     }
 
     this.bookRoute = (originId, destinationId, route) => {
-      $http
-        .post('./tickets/' + accessService.currentUser.id +
-            '/' + originId + '/' + destinationId, route)
-        .then(response => response.data)
+      if (this.trip !== undefined) {
+        return $http
+          .put('./api/tickets/trip/' + accessService.currentUser.id +
+              '/' + this.trip.id, route)
+          .then(response => response.data)
+      } else {
+        return $http
+          .post('./api/tickets/' + accessService.currentUser.id +
+              '/' + originId + '/' + destinationId, route)
+          .then(response => response.data)
+      }
     }
 
     this.cancelTrip = (trip) => {
@@ -61,6 +69,10 @@
 
     this.setDestination = (destination) => {
       this.storedDestination = destination
+    }
+
+    this.setTrip = (trip) => {
+      this.storedTrip = trip
     }
   }
 })()

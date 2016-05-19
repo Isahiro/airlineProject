@@ -64,7 +64,7 @@ public class UserDaoImpl implements UserDao
 		Session session = sf.getCurrentSession();
 		
 		String hql = "select new com.cooksys.airline.models.User("
-				+ "u.id, u.username) "
+				+ "u.id, u.username, u.password) "
 				+ "from User u where u.username = :username";
 		
 		return (User) session

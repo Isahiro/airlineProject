@@ -31,6 +31,8 @@
   <script src="./app/access/access.config.js"></script>
 
   <script src="./app/trip/trip.module.js"></script>
+  <script src="./app/trip/trip-planner.controller.js"></script>
+  <script src="./app/trip/trip-review.controller.js"></script>
   <script src="./app/trip/trip.service.js"></script>
   <script src="./app/trip/trip.routes.js"></script>
   <script src="./app/trip/trip.config.js"></script>
@@ -44,6 +46,60 @@
 </head>
 
 <body ng-cloak>
+
+  <md-toolbar
+      class="row"
+      ng-controller="AppController as app">
+    <div class="md-toolbar-tools">
+      <md-button
+          class="md-raised"
+          aria-label="Plan a Trip"
+          ng-click="app.planTrip()" >
+        Plan a trip
+      </md-button>
+
+      <md-button
+          class="md-raised"
+          aria-label="Review Trips"
+          ng-click="app.reviewTrips()"
+          ng-if="app.accessService.isLoggedIn()" >
+        Review Trips
+      </md-button>
+
+      <span flex></span>
+
+      <span>
+        <div ng-if="!app.accessService.isLoggedIn()">
+          <span>{{app.loginError}}<span>
+
+          <input
+              type="text"
+              placeholder="username"
+              ng-model="credentials.username" />
+
+          <input
+              type="password"
+              placeholder="password"
+              ng-model="credentials.password" />
+
+          <md-button
+              class="md-raised"
+              aria-label="Log in"
+              ng-click="app.login(credentials)" >
+            Log in
+          </md-button>
+        </div>
+
+        <md-button
+            class="md-raised"
+            aria-label="Log out"
+            ng-click="app.accessService.logout()"
+            ng-if="app.accessService.isLoggedIn()" >
+          Log Out
+        </md-button>
+      </span>
+    </div>
+  </md-toolbar>
 
   <div ui-view></div>
 

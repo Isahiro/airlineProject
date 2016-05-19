@@ -377,20 +377,26 @@ public class TicketDaoImpl implements TicketDao
 	{
 		Session session = sf.getCurrentSession();
 		
-		String hql = "select u.trips from User u where u.id = :id";
+		String hql = "from Trip";
 		
 		@SuppressWarnings("unchecked")
-		List<Trip> userTrips = session
+		List<Trip> allTrips = session
 				.createQuery(hql)
-				.setParameter("id", id)
 				.list();
 		
 		List<Trip> activeTrips = new ArrayList<Trip>();
 		
-		for(Trip t : userTrips)
+		for(Trip t : allTrips)
 		{
-			if(!t.getTickets().isEmpty())
-				activeTrips.add(t);
+			for(User u : t.getUsers())
+			{
+				if(u.getId() == id)
+				{
+					if(!t.getTickets().isEmpty())
+						activeTrips.add(t);
+				}
+			}
+			
 		}
 		
 		return activeTrips;
@@ -418,7 +424,7 @@ public class TicketDaoImpl implements TicketDao
 		return getTrips(userId);
 	}
 	
-	private Flight getFlightFromModel(int flightId)
+	public Flight getFlightFromModel(Integer flightId)
 	{
 		for(Flight f : getFlights())
 		{
@@ -548,15 +554,20 @@ public class TicketDaoImpl implements TicketDao
 	@Override
 	public List<Trip> updateTrip(Integer userId, Integer tripId, Route route)
 	{
+		List<Ticket> tickets = createTickets(route, userId);
+		
+		if(tickets == null)
+			return null;
+		
 		Session session = sf.getCurrentSession();
 		
+		Trip trip = getTripById(tripId);
 		
+		trip.getTickets().addAll(tickets);
 		
-		User user = userDao.get(userId);
+		session.saveOrUpdate(trip);
 		
-		
-		
-		return null;
+		return getTrips(userId);
 	}
 	
 	public List<Ticket> createTickets(Route route, Integer userId)
